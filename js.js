@@ -84,7 +84,7 @@ async function initDashboard() {
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
   if (!session) {
-    window.location.replace('html.html');
+    window.location.replace('index.html');
     return;
   }
 
@@ -100,7 +100,7 @@ async function initDashboard() {
       console.error(error);
       return;
     }
-    window.location.replace('html.html');
+    window.location.replace('index.html');
   });
 
   async function loadWallet() {
