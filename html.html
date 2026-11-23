@@ -1,49 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mono Development Plan - A structured roadmap to organize development goals, track progress, and build skills.">
-    <link rel="stylesheet" href="css.css">
-    <title>argus.log in</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css.css">
+  <title>ARGUS | Log in</title>
 </head>
-<body>
-<center>
-    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3892e0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
-  <circle cx="12" cy="12" r="3" stroke-width="1.8"/>
-  <circle cx="12" cy="12" r="1" fill="#3892e0" stroke="none"/>
-</svg>
+<body class="auth-page">
+  <main class="auth-shell">
+    <div class="brand-mark" aria-hidden="true">
+      <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3892e0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+        <circle cx="12" cy="12" r="3" stroke-width="1.8"/>
+        <circle cx="12" cy="12" r="1" fill="#3892e0" stroke="none"/>
+      </svg>
+    </div>
+
     <div class="log-hook">
-    <h1 style="color: #d5dee6;">welcome to argus</h1>
-    <p style="color: #3892e0;">make every move count</p>
-    </div>
-    <br><br><br>
-    <div class="login-box">
-        <h2> log in & sign up</h2>
-        <input type="email" placeholder="email">
-        <input type="password" placeholder="password">
-        <button type="submit" onclick="window.location.href='dashboard.html'"> done </button>
+      <h1>welcome to argus</h1>
+      <p>make every move count</p>
     </div>
 
-</center>
+    <section class="login-box">
+      <h2 id="authHeading">log in</h2>
+      <p id="authHelper" class="muted">New to ARGUS? Create your account.</p>
+      <form id="authForm">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="your@email.com" autocomplete="email" required>
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Password" autocomplete="current-password" minlength="6" required>
+        <button id="authSubmit" type="submit">Log in</button>
+      </form>
+      <button id="switchAuth" class="text-button" type="button">Create an account</button>
+    </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script type="module" src="js.js"></script>
+    <p class="auth-note">Your records are private to your account.</p>
+  </main>
+  <script type="module" src="js.js"></script>
 </body>
 </html>
