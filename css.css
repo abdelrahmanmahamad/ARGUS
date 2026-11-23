@@ -155,3 +155,45 @@ button:disabled { opacity: .6; cursor: wait; }
   .admin-user { flex-direction: column; }
   .admin-last-seen { text-align: left; }
 }
+.auth-message {
+    margin-top: 14px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+    animation: messageFade 0.3s ease;
+}
+
+.auth-message[hidden] {
+    display: none;
+}
+
+.auth-message.success {
+    background: rgba(46, 204, 113, 0.12);
+    border: 1px solid rgba(46, 204, 113, 0.4);
+    color: #4ade80;
+}
+
+.auth-message.error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+.auth-message.info {
+    background: rgba(56, 146, 224, 0.12);
+    border: 1px solid rgba(56, 146, 224, 0.4);
+    color: #60a5fa;
+}
+
+@keyframes messageFade {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

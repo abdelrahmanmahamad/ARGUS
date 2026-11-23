@@ -24,58 +24,156 @@ function dateText(value) {
 }
 
 async function initAuthPage() {
-  const form = $('#authForm');
-  if (!form) return;
+const form = $('#authForm');
+if (!form) return;
 
-  const submit = $('#authSubmit');
-  const switchButton = $('#switchAuth');
-  const heading = $('#authHeading');
-  const helper = $('#authHelper');
-  const password = $('#password');
-  let mode = 'login';
+const submit = $('#authSubmit');
+const switchButton = $('#switchAuth');
+const heading = $('#authHeading');
+const helper = $('#authHelper');
+const password = $('#password');
+const message = $('#authMessage');
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    window.location.replace('dashboard.html');
-    return;
+let mode = 'login';
+let messageTimer;
+
+function showMessage(text, type = 'info') {
+clearTimeout(messageTimer);
+
+message.textContent = text;
+message.className = `auth-message ${type}`;
+message.hidden = false;
+
+messageTimer = setTimeout(() => {
+  message.hidden = true;
+}, 3000);
+}
+
+function hideMessage() {
+clearTimeout(messageTimer);
+message.hidden = true;
+}
+
+function updateMode() {
+heading.textContent = mode === 'login'
+? 'log in'
+: 'create account';
+
+submit.textContent = mode === 'login'
+  ? 'Log in'
+  : 'Sign up';
+
+switchButton.textContent = mode === 'login'
+  ? 'Create an account'
+  : 'I already have an account';
+
+helper.textContent = mode === 'login'
+  ? 'New to ARGUS? Create your account.'
+  : 'Already registered? Log in instead.';
+
+password.autocomplete = mode === 'login'
+  ? 'current-password'
+  : 'new-password';
+}
+
+const { data: { session } } = await supabase.auth.getSession();
+
+if (session) {
+window.location.replace('dashboard.html');
+return;
+}
+
+switchButton.addEventListener('click', () => {
+mode = mode === 'login' ? 'signup' : 'login';
+hideMessage();
+updateMode();
+});
+
+form.addEventListener('submit', async (event) => {
+event.preventDefault();
+
+const email = $('#email').value.trim();
+const passwordValue = password.value;
+
+if (!email || !passwordValue) {
+  showMessage('Please fill in all fields.', 'info');
+  return;
+}
+
+submit.disabled = true;
+submit.textContent = 'Please wait...';
+hideMessage();
+
+try {
+  if (mode === 'signup') {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: passwordValue
+    });
+
+    if (error) throw error;
+
+    // Sign out after signup so the user can log in manually.
+    if (data.session) {
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
+    }
+
+    mode = 'login';
+    password.value = '';
+    updateMode();
+
+    showMessage(
+      'Account created successfully! Please log in.',
+      'success'
+    );
+
+  } else {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: passwordValue
+    });
+
+    if (error) throw error;
+
+    showMessage('Welcome back! Redirecting...', 'success');
+
+    window.location.href = 'dashboard.html';
   }
 
-  switchButton.addEventListener('click', () => {
-    mode = mode === 'login' ? 'signup' : 'login';
-    heading.textContent = mode === 'login' ? 'log in' : 'create account';
-    submit.textContent = mode === 'login' ? 'Log in' : 'Sign up';
-    switchButton.textContent = mode === 'login' ? 'Create an account' : 'I already have an account';
-    helper.textContent = mode === 'login'
-      ? 'New to ARGUS? Create your account.'
-      : 'Already registered? Log in instead.';
-    password.autocomplete = mode === 'login' ? 'current-password' : 'new-password';
-  });
+} catch (error) {
+  console.error('Authentication error:', error);
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const email = $('#email').value.trim();
-    const passwordValue = password.value;
-    if (!email || !passwordValue) return;
+  const errorMessage = error.message?.toLowerCase() || '';
 
-    submit.disabled = true;
-    submit.textContent = 'Please wait...';
+  if (
+    errorMessage.includes('invalid login credentials') ||
+    errorMessage.includes('invalid credentials')
+  ) {
+    showMessage('Invalid email or password.', 'error');
 
-    try {
-      if (mode === 'signup') {
-        const { data, error } = await supabase.auth.signUp({ email, password: passwordValue });
-        if (error) throw error;
-        if (data.session) window.location.href = 'dashboard.html';
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: passwordValue });
-        if (error) throw error;
-        window.location.href = 'dashboard.html';
-      }
-    } catch {
-    } finally {
-      submit.disabled = false;
-      submit.textContent = mode === 'login' ? 'Log in' : 'Sign up';
-    }
-  });
+  } else if (
+    errorMessage.includes('already registered') ||
+    errorMessage.includes('already been registered') ||
+    errorMessage.includes('user already registered')
+  ) {
+    showMessage('This email is already registered.', 'error');
+
+  } else if (errorMessage.includes('password')) {
+    showMessage('Password must meet the required security rules.', 'error');
+
+  } else if (errorMessage.includes('email')) {
+    showMessage('Please enter a valid email address.', 'error');
+
+  } else {
+    showMessage('Something went wrong. Please try again.', 'error');
+  }
+
+} finally {
+  submit.disabled = false;
+  submit.textContent = mode === 'login' ? 'Log in' : 'Sign up';
+}
+});
 }
 
 async function initDashboard() {
