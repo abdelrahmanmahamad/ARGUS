@@ -197,3 +197,9 @@ button:disabled { opacity: .6; cursor: wait; }
         transform: translateY(0);
     }
 }
+.support {
+    display: block;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--red);
+}
